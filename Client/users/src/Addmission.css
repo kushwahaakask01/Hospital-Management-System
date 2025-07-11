@@ -1,0 +1,109 @@
+.MainDiv {
+  margin: 0%;
+  padding: 0%;
+  width: 100%;
+  height: 100%;
+}
+.MainDiv .TopNav{
+  background-color: #0d47a1;
+  height: 90px;
+}
+.MainDiv .TopNav .container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.Seconddiv {
+  width: 100%;
+  margin:0 5px 0px 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.MainDiv .Seconddiv .card1{
+  width: 30%;
+  margin: 40px auto;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  background-color: #fefefe;
+  border: 1px solid #ddd;
+}
+.MainDiv .Seconddiv .card1 .CardTitle{
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #333;
+}
+
+.card2 {
+  max-width: 100%;
+  margin: 40px 0;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  background-color: #fefefe;
+  border: 1px solid #ddd;
+}
+
+.card2 .CardTitle {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #333;
+}
+
+.cardtext {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.CT1 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+/* Responsive: Stack inputs on smaller screens */
+@media (max-width: 768px) {
+  .CT1 {
+    flex-direction: column;
+  }
+}
+
+/* Optional: spacing and width for TextField */
+.CT1 .MuiTextField-root {
+  flex: 1;
+  min-width: 200px;
+}
+
+.CT1 .select{
+  display: flex;
+  flex-direction: column;
+}
+.CT1 .select label{
+  font-size: 20px;
+  font-weight: bold;
+}
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding: 10px;
+  margin-bottom: 0%;
+}
+.form-footer button{
+  width: 25%;
+  padding: 15px;
+  border-radius: 10px;
+}
+.form-footer button:hover{
+  background-color: rgb(153, 20, 153);
+  color: white;
+}
