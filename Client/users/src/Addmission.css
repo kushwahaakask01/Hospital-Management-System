@@ -4,25 +4,44 @@
   width: 100%;
   height: 100%;
 }
-.MainDiv .TopNav{
-  background-color: #0d47a1;
+
+.MainDiv .TopNav {
+  background-color: #05295f;
+  color: white;
   height: 90px;
 }
-.MainDiv .TopNav .container{
+
+.MainDiv .TopNav .container {
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 .Seconddiv {
   width: 100%;
-  margin:0 5px 0px 5px;
+  margin: 0 5px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-direction: row;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
-.MainDiv .Seconddiv .card1{
+.Seconddiv .CardTextdiv {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.Seconddiv .CardTextdiv .person {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.MainDiv .Seconddiv .card1 {
   width: 30%;
   margin: 40px auto;
   padding: 30px;
@@ -31,12 +50,20 @@
   background-color: #fefefe;
   border: 1px solid #ddd;
 }
-.MainDiv .Seconddiv .card1 .CardTitle{
+
+.MainDiv .Seconddiv .card1 .CardTitle {
   font-size: 28px;
   font-weight: bold;
   margin-bottom: 30px;
   text-align: center;
   color: #333;
+}
+.link {
+  color: black;
+  text-decoration: none;
+  font-size: 24px;
+  font-weight: bold;
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 .card2 {
@@ -70,27 +97,21 @@
   gap: 20px;
 }
 
-/* Responsive: Stack inputs on smaller screens */
-@media (max-width: 768px) {
-  .CT1 {
-    flex-direction: column;
-  }
-}
-
-/* Optional: spacing and width for TextField */
 .CT1 .MuiTextField-root {
   flex: 1;
   min-width: 200px;
 }
 
-.CT1 .select{
+.CT1 .select {
   display: flex;
   flex-direction: column;
 }
-.CT1 .select label{
+
+.CT1 .select label {
   font-size: 20px;
   font-weight: bold;
 }
+
 .form-footer {
   display: flex;
   justify-content: flex-end;
@@ -98,12 +119,55 @@
   padding: 10px;
   margin-bottom: 0%;
 }
-.form-footer button{
+
+.form-footer button {
   width: 25%;
   padding: 15px;
   border-radius: 10px;
 }
-.form-footer button:hover{
+
+.form-footer button:hover {
   background-color: rgb(153, 20, 153);
   color: white;
+}
+
+/* ✅ Mobile Responsive Fixes */
+@media (max-width: 768px) {
+  .CT1 {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .CardTitle {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .Seconddiv {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .MainDiv .Seconddiv .card1 {
+    width: 90%;
+    margin: 20px auto;
+    padding: 20px;
+  }
+
+  .card2 {
+    width: 90%;
+    margin: 20px auto;
+    padding: 20px;
+  }
+
+  .form-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-footer button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+  }
 }

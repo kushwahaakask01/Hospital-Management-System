@@ -1,0 +1,19 @@
+.CardDiv {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+}
+
+.backButon {
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    z-index: 999;
+}
+.backButon button:hover{
+    background-color:black;
+    color: white;
+}

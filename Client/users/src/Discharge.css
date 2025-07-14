@@ -1,0 +1,42 @@
+.TopDischarge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    overflow-y: auto;
+}
+
+.PatientDetail {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+.Detail{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.Detail > div {
+  width: 48%;
+}
+
+.Detail p {
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 4px 0;
+  color: #333;
+}
+
+.Detail strong {
+  font-weight: 600;
+  color: #000;
+}
+
+.Detail span {
+  font-weight: 400;
+  color: #555;
+}
