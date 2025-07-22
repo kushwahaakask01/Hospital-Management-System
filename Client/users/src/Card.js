@@ -1,44 +1,67 @@
 import './Card.css';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+
+// Material UI
 import TextField from '@mui/material/TextField';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Snackbar from '@mui/material/Snackbar';
-import { useState } from 'react';
 import InputAdornment from '@mui/material/InputAdornment';
 import LockIcon from '@mui/icons-material/Lock';
-import CreditCard from './Image/Credit Card.png'
-import CardHolder from './Image/CardHolder.png'
 import EventIcon from '@mui/icons-material/Event';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+
+// Images
+import CreditCard from './Image/Credit Card.png';
+import CardHolder from './Image/CardHolder.png';
+
+//Dialog Icon 
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import KeyIcon from '@mui/icons-material/Key';
+
 function Cards() {
     const navigate = useNavigate();
-
     const location = useLocation();
-    const feesName = location.state?.name || '';
 
-    // Input States
+    const feesName = location.state?.name || '';
+    const email = location.state?.email || '';
+
+    // Form states
     const [name, setName] = useState('');
     const [cardNumber, setCardNumber] = useState('');
     const [expireDate, setExpireDate] = useState('');
     const [cvv, setCvv] = useState('');
 
-    // Error States
+    // Dialog and OTP-related states
+    const [open, setOpen] = useState(false);
+    const [amount, setAmount] = useState('');
+    const [otp, setOtp] = useState('');
+
+    // Snackbar states
+    const [errorOpen, setErrorOpen] = useState(false);
+    const [successOpen, setSuccessOpen] = useState(false);
+
+    // Field error states
     const [errors, setErrors] = useState({
         name: false,
         cardNumber: false,
         expireDate: false,
-        cvv: false
+        cvv: false,
     });
 
-    // Snackbar States
-    const [errorOpen, setErrorOpen] = useState(false);
-    const [successOpen, setSuccessOpen] = useState(false);
-
+    // Snakebar
     const handleErrorClose = () => setErrorOpen(false);
     const handleSuccessClose = () => setSuccessOpen(false);
 
-    // Realtime validation
+    //Dialog
+    const handleClose = () => setOpen(false);
+
+    //Handle Error 
     const handleChange = (field, value) => {
         switch (field) {
             case 'name':
@@ -49,21 +72,21 @@ function Cards() {
                 setCardNumber(value);
                 setErrors((prev) => ({
                     ...prev,
-                    cardNumber: value.length !== 16 || !/^\d+$/.test(value)
+                    cardNumber: value.length !== 16 || !/^\d+$/.test(value),
                 }));
                 break;
             case 'expireDate':
                 setExpireDate(value);
                 setErrors((prev) => ({
                     ...prev,
-                    expireDate: !/^(0[1-9]|1[0-2])\/\d{2}$/.test(value)
+                    expireDate: !/^(0[1-9]|1[0-2])\/\d{2}$/.test(value),
                 }));
                 break;
             case 'cvv':
                 setCvv(value);
                 setErrors((prev) => ({
                     ...prev,
-                    cvv: value.length < 3 || value.length > 4 || !/^\d+$/.test(value)
+                    cvv: value.length < 3 || value.length > 4 || !/^\d+$/.test(value),
                 }));
                 break;
             default:
@@ -71,12 +94,13 @@ function Cards() {
         }
     };
 
+    //Check error
     const handleSubmit = () => {
         const newErrors = {
             name: name.trim().length < 3,
             cardNumber: cardNumber.length !== 16 || !/^\d+$/.test(cardNumber),
             expireDate: !/^(0[1-9]|1[0-2])\/\d{2}$/.test(expireDate),
-            cvv: cvv.length < 3 || cvv.length > 4 || !/^\d+$/.test(cvv)
+            cvv: cvv.length < 3 || cvv.length > 4 || !/^\d+$/.test(cvv),
         };
 
         setErrors(newErrors);
@@ -84,31 +108,93 @@ function Cards() {
         if (Object.values(newErrors).includes(true)) {
             setErrorOpen(true);
         } else {
-            setSuccessOpen(true);
-            setTimeout(() => {
-                if(feesName==='AdmitFees')navigate('/admission')
-                    else alert('Wait')
-                window.location.reload();
-            }, 2000);
+            // Open Dialog for OTP + Amount
+            setOpen(true);
         }
     };
 
-    const Navigation = () => {
+    //Submit the data to database
+    const handleFinalSubmit = async () => {
+        if (!amount || !otp) {
+            setErrorOpen(true);
+            return;
+        }
+
+        if (feesName === 'AdmitFees') {
+            try {
+                const res = await fetch(`http://localhost:5000/CreditCardAdmitFees/${email}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name,
+                        cardNumber,
+                        cvv,
+                        expireDate,
+                        amount,
+                        otp,
+                    }),
+                });
+
+                if (!res.ok) throw new Error('Server Error');
+
+                setSuccessOpen(true);
+                setOpen(false);
+
+                setTimeout(() => {
+                    navigate('/admission');
+                }, 2000);
+            } catch (error) {
+                console.error('Error saving card:', error);
+                setErrorOpen(true);
+            }
+        } else {
+            try {
+                const res = await fetch(`http://localhost:5000/CreditCardDischargeFees/${email}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name,
+                        cardNumber,
+                        cvv,
+                        expireDate,
+                        amount,
+                        otp,
+                    }),
+                });
+
+                if (!res.ok) throw new Error('Server Error');
+
+                setSuccessOpen(true);
+                setOpen(false);
+
+                setTimeout(() => {
+                    navigate('/receipt',{state:{email:email}});
+                }, 2000);
+            } catch (error) {
+                console.error('Error saving card:', error);
+                setErrorOpen(true);
+            }
+        }
+    };
+
+    const BackNavigation = () => {
         if (feesName === 'AdmitFees') {
             navigate('/admission');
         } else {
             navigate('/discharge');
         }
-    }
+    };
 
     return (
         <div className="CardDiv">
-            <div className='backButon'>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={Navigation}
-                >
+            <div className="backButon">
+                <Button variant="outlined" color="primary" onClick={BackNavigation}>
                     Back
                 </Button>
             </div>
@@ -118,6 +204,7 @@ function Cards() {
                     <CreditCardIcon sx={{ fontSize: 30, verticalAlign: 'middle', color: '#1976d2' }} /> ATM Payment
                 </h2>
 
+                {/* Cardholder Name */}
                 <TextField
                     label="Cardholder Name"
                     fullWidth
@@ -127,38 +214,18 @@ function Cards() {
                     value={name}
                     onChange={(e) => handleChange('name', e.target.value)}
                     error={errors.name}
-                    helperText={errors.name ? "Name must be at least 3 characters" : ""}
+                    helperText={errors.name ? 'Name must be at least 3 characters' : ''}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="start">
-                                <img src={CardHolder} alt="Visa" style={{ height: 24, marginRight: 4 }} />
+                                <img src={CardHolder} alt="CardHolder" style={{ height: 24, marginRight: 4 }} />
                             </InputAdornment>
                         ),
                     }}
-                    sx={{
-                        '& .MuiInputLabel-root': {
-                            fontWeight: 'bold',
-                            color: 'black',
-                        },
-                        '& label.Mui-focused': {
-                            color: 'black',
-                        },
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                                borderColor: 'blue',
-                            },
-                            '&:hover fieldset': {
-                                borderColor: 'blue',
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: 'blue',
-                            },
-                        },
-                    }}
-                    InputLabelProps={{ shrink: true }}
-                    placeholder='CARDHOLDER NAME'
+                    placeholder="CARDHOLDER NAME"
                 />
 
+                {/* Card Number */}
                 <TextField
                     label="Card Number"
                     fullWidth
@@ -169,38 +236,18 @@ function Cards() {
                     onChange={(e) => handleChange('cardNumber', e.target.value)}
                     inputProps={{ maxLength: 16 }}
                     error={errors.cardNumber}
-                    helperText={errors.cardNumber ? "Card number must be 16 digits" : ""}
+                    helperText={errors.cardNumber ? 'Card number must be 16 digits' : ''}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="start">
-                                <img src={CreditCard} alt="Visa" style={{ height: 24, marginRight: 4 }} />
+                                <img src={CreditCard} alt="Card" style={{ height: 24, marginRight: 4 }} />
                             </InputAdornment>
                         ),
                     }}
-                    sx={{
-                        '& .MuiInputLabel-root': {
-                            fontWeight: 'bold',
-                            color: 'black',
-                        },
-                        '& label.Mui-focused': {
-                            color: 'black',
-                        },
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                                borderColor: 'blue',
-                            },
-                            '&:hover fieldset': {
-                                borderColor: 'blue',
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: 'blue',
-                            },
-                        },
-                    }}
-                    InputLabelProps={{ shrink: true }}
-                    placeholder='XXXX XXXX XXXX XXXX'
+                    placeholder="XXXX XXXX XXXX XXXX"
                 />
 
+                {/* Expiry Date and CVV */}
                 <Box sx={{ display: 'flex', gap: 2 }}>
                     <TextField
                         label="Expiry Date"
@@ -211,7 +258,7 @@ function Cards() {
                         value={expireDate}
                         onChange={(e) => handleChange('expireDate', e.target.value)}
                         error={errors.expireDate}
-                        helperText={errors.expireDate ? "Format must be MM/YY" : ""}
+                        helperText={errors.expireDate ? 'Format must be MM/YY' : ''}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="start">
@@ -219,31 +266,10 @@ function Cards() {
                                 </InputAdornment>
                             ),
                         }}
-                        sx={{
-                            '& .MuiInputLabel-root': {
-                                fontWeight: 'bold',
-                                color: 'black',
-                            },
-                            '& label.Mui-focused': {
-                                color: 'black',
-                            },
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                    borderColor: 'blue',
-                                },
-                                '&:hover fieldset': {
-                                    borderColor: 'blue',
-                                },
-                                '&.Mui-focused fieldset': {
-                                    borderColor: 'blue',
-                                },
-                            },
-                        }}
-                        InputLabelProps={{ shrink: true }}
                     />
                     <TextField
                         label="CVV"
-                        placeholder="453"
+                        placeholder="123"
                         variant="outlined"
                         fullWidth
                         required
@@ -252,7 +278,7 @@ function Cards() {
                         value={cvv}
                         onChange={(e) => handleChange('cvv', e.target.value)}
                         error={errors.cvv}
-                        helperText={errors.cvv ? "CVV must be 3–4 digits" : ""}
+                        helperText={errors.cvv ? 'CVV must be 3–4 digits' : ''}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="start">
@@ -260,42 +286,74 @@ function Cards() {
                                 </InputAdornment>
                             ),
                         }}
-                        sx={{
-                            '& .MuiInputLabel-root': {
-                                fontWeight: 'bold',
-                                color: 'black',
-                            },
-                            '& label.Mui-focused': {
-                                color: 'black',
-                            },
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                    borderColor: 'blue',
-                                },
-                                '&:hover fieldset': {
-                                    borderColor: 'blue',
-                                },
-                                '&.Mui-focused fieldset': {
-                                    borderColor: 'blue',
-                                },
-                            },
-                        }}
-                        InputLabelProps={{ shrink: true }}
                     />
                 </Box>
 
+                {/* Submit Button */}
                 <Button
                     variant="contained"
                     color="primary"
                     fullWidth
-                    sx={{ mt: 3, padding: 1.5, bgcolor: "#1565c0" }}
+                    sx={{ mt: 3, padding: 1.5, bgcolor: '#1565c0' }}
                     onClick={handleSubmit}
                 >
-                    {
-                        feesName === 'AdmitFees' ? 'Admit Fees(1000)' : 'Total Amount'
-                    }
+                    {feesName === 'AdmitFees' ? 'Admit Fees (1000)' : 'Total Amount'}
                 </Button>
             </Box>
+
+            {/* OTP + Amount Dialog */}
+            <Dialog open={open} onClose={handleClose} PaperProps={{
+                sx: {
+                    width: 350,
+                    borderRadius: 2,
+                    backgroundColor: '#f0f4ff'
+                }
+            }}>
+                <DialogTitle style={{ textAlign: 'center', fontWeight: 'bold' }}>
+                    Enter Amount & OTP
+                </DialogTitle>
+                <DialogContent>
+                    <TextField
+                        fullWidth
+                        label="Enter Amount"
+                        type="text"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        margin="normal"
+                        required
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="start">
+                                    <AttachMoneyIcon sx={{ color: '#1565c0' }} />
+                                </InputAdornment>
+                            )
+                        }}
+                    />
+                    <TextField
+                        fullWidth
+                        label="Enter OTP"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        margin="normal"
+                        required
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="start">
+                                    <KeyIcon sx={{ color: '#1565c0' }} />
+                                </InputAdornment>
+                            )
+                        }}
+                    />
+                </DialogContent>
+                <DialogActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
+                    <Button onClick={handleClose} style={{ fontWeight: 'bold' }}>
+                        Cancel
+                    </Button>
+                    <Button onClick={handleFinalSubmit} variant="contained" style={{ fontWeight: 'bold', backgroundColor: '#09366aff' }}>
+                        Submit Payment
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             {/* Error Snackbar */}
             <Snackbar

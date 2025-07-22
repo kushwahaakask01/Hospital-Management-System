@@ -1,5 +1,5 @@
 import './Addmission.css'
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 //Material 
 import TextField from '@mui/material/TextField';
 import { MenuItem } from '@mui/material';
@@ -19,43 +19,37 @@ import PaymentsIcon from '@mui/icons-material/Payments';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function Admission() {
-    //Navigation 
     const navigate = useNavigate();
-    //Snakbar
+
     const [successOpen, setSuccessOpen] = useState(false);
     const [errorOpen, setErrorOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("Please fill in all required fields correctly.");
 
-    const handleSuccessClose = () => {
-        setSuccessOpen(false);
-    };
+    const handleSuccessClose = () => setSuccessOpen(false);
+    const handleErrorClose = () => setErrorOpen(false);
 
-    const handleErrorClose = () => {
-        setErrorOpen(false);
-    };
-
-    //Get and set in the input value
     const [fullName, setFullName] = useState('');
-    const [gender, setGender] = useState('')
-    const [age, SetAge] = useState('')
-    const [bloodGroup, setBloodGroup] = useState('')
-    const [contactNumber, setContactNumber] = useState('')
-    const [email, setEmail] = useState('')
-    const [emergencyNumber, setEmergencyNumber] = useState('')
-    const [marital, setMarital] = useState('')
-    const [identificationDocu, setIdentificationDouc] = useState('')
-    const [permanentAddress, setPermanentAddress] = useState('')
-    const [addmissionDate, setAddmissionDate] = useState('')
-    const [department, setDepartment] = useState('')
-    const [doctorName, setDoctorName] = useState('')
-    const [typeOfAddmission, setTypeOfAddmission] = useState('')
-    const [reasionForAdmission, setReasionForAdmission] = useState('')
-    const [paymentMode, setpaymentMode] = useState('')
+    const [gender, setGender] = useState('');
+    const [age, setAge] = useState('');
+    const [bloodGroup, setBloodGroup] = useState('');
+    const [contactNumber, setContactNumber] = useState('');
+    const [email, setEmail] = useState('');
+    const [emergencyNumber, setEmergencyNumber] = useState('');
+    const [marital, setMarital] = useState('');
+    const [identificationDocu, setIdentificationDouc] = useState('');
+    const [permanentAddress, setPermanentAddress] = useState('');
+    const [addmissionDate, setAddmissionDate] = useState('');
+    const [department, setDepartment] = useState('');
+    const [doctorName, setDoctorName] = useState('');
+    const [typeOfAddmission, setTypeOfAddmission] = useState('');
+    const [reasonForAdmission, setReasonForAdmission] = useState('');
+    const [paymentMode, setpaymentMode] = useState('');
 
+    const [loading, setLoading] = useState(false);
 
-    // Error in input
     const [errors, setErrors] = useState({
         fullName: false,
         gender: false,
@@ -71,10 +65,9 @@ function Admission() {
         department: false,
         doctorName: false,
         typeOfAddmission: false,
-        reasionForAdmission: false,
+        reasonForAdmission: false,
         paymentMode: false
     });
-
 
     const inputFeild = (e) => {
         const label = e.target.labels?.[0]?.innerText || e.target.name || e.target.id;
@@ -82,76 +75,75 @@ function Admission() {
 
         switch (label) {
             case 'Full Name':
-                setFullName(value);
                 setErrors(prev => ({ ...prev, fullName: value.trim().length < 3 }));
+                setFullName(value);
                 break;
             case 'Gender':
-                setGender(value);
                 setErrors(prev => ({ ...prev, gender: value === '' }));
+                setGender(value);
                 break;
             case 'Age':
-                SetAge(value);
                 setErrors(prev => ({ ...prev, age: value === '' }));
+                setAge(value);
                 break;
             case 'Blood Group':
-                setBloodGroup(value);
                 setErrors(prev => ({ ...prev, bloodGroup: value === '' }));
+                setBloodGroup(value);
                 break;
             case 'Contact Number':
-                setContactNumber(value);
                 setErrors(prev => ({ ...prev, contactNumber: value.length !== 10 }));
+                setContactNumber(value);
                 break;
             case 'Email':
-                setEmail(value);
                 setErrors(prev => ({ ...prev, email: !/\S+@\S+\.\S+/.test(value) }));
+                setEmail(value);
                 break;
             case 'Emergency Number':
-                setEmergencyNumber(value);
                 setErrors(prev => ({ ...prev, emergencyNumber: value.length !== 10 }));
+                setEmergencyNumber(value);
                 break;
             case 'Marital Status':
-                setMarital(value);
                 setErrors(prev => ({ ...prev, marital: value === '' }));
+                setMarital(value);
                 break;
             case 'Identification Documents':
-                setIdentificationDouc(value);
                 setErrors(prev => ({ ...prev, identificationDocu: value === '' }));
+                setIdentificationDouc(value);
                 break;
             case 'Permanent Address':
-                setPermanentAddress(value);
                 setErrors(prev => ({ ...prev, permanentAddress: value.trim().length < 5 }));
+                setPermanentAddress(value);
                 break;
             case 'Admission Date':
-                setAddmissionDate(value);
                 const today = new Date().toISOString().split('T')[0];
                 setErrors(prev => ({
                     ...prev,
                     addmissionDate: value === '' || value > today
                 }));
+                setAddmissionDate(value);
                 break;
             case 'Department / Ward':
-                setDepartment(value);
                 setErrors(prev => ({ ...prev, department: value === '' }));
+                setDepartment(value);
                 break;
             case 'Doctor’s Name':
-                setDoctorName(value);
                 setErrors(prev => ({ ...prev, doctorName: value === '' }));
+                setDoctorName(value);
                 break;
             case 'Type of Admission':
-            case 'Type of Admission ':
-                setTypeOfAddmission(value);
                 setErrors(prev => ({ ...prev, typeOfAddmission: value === '' }));
+                setTypeOfAddmission(value);
                 break;
             case 'Reason for Admission':
-                setReasionForAdmission(value);
-                setErrors(prev => ({ ...prev, reasionForAdmission: value === '' }));
+                setErrors(prev => ({ ...prev, reasonForAdmission: value === '' }));
+                setReasonForAdmission(value);
                 break;
             case 'Mode of Payment':
-                setpaymentMode(value);
                 setErrors(prev => ({ ...prev, paymentMode: value === '' }));
+                setpaymentMode(value);
                 break;
             default:
-                console.log("Unhandled field:", label);
+                console.warn("Unhandled field:", label);
         }
     };
 
@@ -171,63 +163,92 @@ function Admission() {
             department: department === '',
             doctorName: doctorName === '',
             typeOfAddmission: typeOfAddmission === '',
-            reasionForAdmission: reasionForAdmission === '',
+            reasonForAdmission: reasonForAdmission === '',
             paymentMode: paymentMode === '',
         };
 
         setErrors(newErrors);
-
         return !Object.values(newErrors).includes(true);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (validateAllFields()) {
-            setSuccessOpen(true);
-            setTimeout(() => {
-                window.location.reload();
-            }, 200);
+            setLoading(true);
 
-            switch (paymentMode) {
-                case 'cash':
-                    alert("Thank you")
-                    window.location.reload();
-                    break;
-                case 'card':
-                    navigate('/card', { state: { name: 'AdmitFees' } })
-                    break;
-                case 'online':
-                    navigate('/onlinepayment', { state: { name: 'AdmitFees' } });
-                    break;
-                default:
-                    console.log("Something is missing ")
-                    break;
+            const data = {
+                fullName, gender, age, bloodGroup, contactNumber, email, emergencyNumber, marital,
+                identificationDocu, permanentAddress, addmissionDate, department, doctorName,
+                typeOfAddmission, reasonForAdmission, paymentMode
+            };
+
+            try {
+                const response = await fetch('http://localhost:5000/AddPatient', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log("Success:", result);
+                setSuccessOpen(true);
+
+                setTimeout(() => {
+                    switch (paymentMode) {
+                        case 'cash':
+                            alert("Thank you");
+                            break;
+                        case 'card':
+                            navigate('/card', { state: { name: 'AdmitFees', email: email } });
+                            break;
+                        case 'online':
+                            navigate('/onlinepayment', { state: { name: 'AdmitFees', email: email } });
+                            break;
+                        default:
+                            console.log("Unknown payment mode");
+                            break;
+                    }
+                }, 2000);
+
+            } catch (error) {
+                console.error("Error submitting form:", error);
+                setErrorMessage("Server error. Please try again later.");
+                setErrorOpen(true);
             }
-            // const data = {
-            //     fullName, gender, age, bloodGroup, contactNumber, email, emergencyNumber, marital, identificationDocu,
-            //     permanentAddress, addmissionDate, department, doctorName, typeOfAddmission, reasionForAdmission, paymentMode
-            // }
-            // fetch('http://localhost:5000/api/patientData', {
-            //     method: 'POST',
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //         "Accept": "application/json"
-            //     },
-            //     body: JSON.stringify(data)
-            // })
-            //     .then(response => {
-            //         if (!response.ok) {
-            //             throw new Error(`HTTP error! Status: ${response.status}`);
-            //         }
-            //         return response.json();
-            //     })
-            //     .then(result => {
-            //         console.log("Success:", result);
-            //     })
-            //     .catch(error => {
-            //         console.error("Error:", error);
-            //     });
         } else {
+            setErrorMessage("Please fill in all required fields correctly.");
             setErrorOpen(true);
+        }
+    };
+
+    const [patients, setPatients] = useState([]);
+
+    useEffect(() => {
+        fetch('http://localhost:5000/AllPatientName')
+            .then(res => res.json())
+            .then(data => setPatients(data?.data || []))
+            .catch(err => console.error(err));
+    }, []);
+
+    const PatientData = (email) => {
+        const patient = patients.find(p => p.email === email);
+
+        if (!patient) {
+            setErrorMessage('Patient not found');
+            setErrorOpen(true);
+            return;
+        }
+
+        if (patient.Discharge[0]?.DischargeDate) {
+            navigate('/receipt', { state: { email } });
+        } else {
+            navigate('/discharge', { state: { email } });
         }
     };
 
@@ -246,14 +267,22 @@ function Admission() {
                     <Card.Body>
                         <Card.Title className='CardTitle'>Pateints</Card.Title>
                         <Card.Text>
-                            <div className='CardTextdiv'>
-                                <div className='person'>
-                                    <PersonIcon sx={{ fontSize: 40, color: '#05295f' }} />
-                                    <Link to='/discharge' className='link'>Akash</Link>
+                            {patients.map((item, index) => (
+                                <div key={index} className='CardTextdiv'>
+                                    <div className='person'>
+                                        <PersonIcon sx={{ fontSize: 40, color: '#05295f' }} />
+                                        <Button onClick={() => PatientData(item.email)} className='link'>{item.fullName}</Button>
+                                    </div>
+                                    <DeleteIcon
+                                        sx={{
+                                            color: 'rgb(11, 91, 11)',
+                                            fontSize: 28,
+                                            cursor: 'pointer',
+                                            '&:hover': { color: 'rgb(121, 12, 12)' },
+                                        }}
+                                    />
                                 </div>
-                                <DeleteIcon sx={{ color: 'rgb(11, 91, 11)', fontSize: 28, cursor: 'pointer', '&:hover': { color: 'rgb(121, 12, 12)', } }} />
-                            </div>
-
+                            ))}
                         </Card.Text>
                     </Card.Body>
                 </Card>
@@ -267,15 +296,19 @@ function Admission() {
                                 <TextField
                                     error={errors.fullName}
                                     helperText={errors.fullName ? "Full Name must be at least 3 characters" : ""}
-                                    id="Full Name"
+                                    id='Full Name'
                                     label="Full Name"
                                     variant="outlined"
+                                    fullWidth
+                                    defaultValue=""
+                                    name='Full Name'
                                     onChange={inputFeild}
                                 />
                                 <TextField
                                     select
                                     error={errors.gender}
                                     helperText={errors.gender ? "Please select gender" : ""}
+                                    id='Gender'
                                     label="Gender"
                                     variant="outlined"
                                     fullWidth
@@ -293,15 +326,20 @@ function Admission() {
                                     id="Age"
                                     label="Age"
                                     variant="outlined"
+                                    name='Age'
+                                    fullWidth
+                                    defaultValue=''
                                     onChange={inputFeild}
                                 />
                                 <TextField
                                     select
                                     error={errors.bloodGroup}
                                     helperText={errors.bloodGroup ? "This field is required" : ""}
+                                    id='Blood Group'
                                     label="Blood Group"
                                     variant="outlined"
-                                    fullWidth defaultValue=""
+                                    fullWidth
+                                    defaultValue=""
                                     name='Blood Group'
                                     onChange={inputFeild}
                                 >
@@ -322,6 +360,9 @@ function Admission() {
                                     id="Contact Number"
                                     label="Contact Number"
                                     variant="outlined"
+                                    name='Contact Number'
+                                    fullWidth
+                                    defaultValue=''
                                     onChange={inputFeild}
                                 />
                                 <TextField
@@ -330,6 +371,9 @@ function Admission() {
                                     id="Email"
                                     label="Email"
                                     variant="outlined"
+                                    name='Email'
+                                    fullWidth
+                                    defaultValue=''
                                     onChange={inputFeild}
                                 />
                                 <TextField
@@ -338,12 +382,16 @@ function Admission() {
                                     id="Emergency Number"
                                     label="Emergency Number"
                                     variant="outlined"
+                                    defaultValue=''
+                                    name='Emergency Number'
+                                    fullWidth
                                     onChange={inputFeild}
                                 />
                                 <TextField
                                     select
                                     error={errors.marital}
                                     helperText={errors.marital ? "This field is required" : ""}
+                                    id='Marital Status'
                                     label="Marital Status"
                                     variant="outlined"
                                     fullWidth
@@ -360,6 +408,7 @@ function Admission() {
                                     select
                                     error={errors.identificationDocu}
                                     helperText={errors.identificationDocu ? "This field is required" : ""}
+                                    id='Identification Documents'
                                     label="Identification Documents"
                                     variant="outlined"
                                     fullWidth
@@ -379,6 +428,9 @@ function Admission() {
                                     id="Permanent Address"
                                     label="Permanent Address"
                                     variant="outlined"
+                                    defaultValue=''
+                                    name='Permanent Address'
+                                    fullWidth
                                     onChange={inputFeild}
                                 />
                             </div>
@@ -391,10 +443,13 @@ function Admission() {
                                             ? "This field is required and date should not be in the future"
                                             : ""
                                     }
+                                    id='Admission Date'
                                     label="Admission Date"
                                     type="date"
                                     variant="outlined"
                                     fullWidth
+                                    defaultValue=''
+                                    name='Admission Date'
                                     InputLabelProps={{ shrink: true }}
                                     onChange={inputFeild}
                                 />
@@ -403,9 +458,11 @@ function Admission() {
                                     error={errors.department}
                                     helperText={errors.department ? "This field is required" : ""}
                                     defaultValue=""
+                                    id='Department / Ward'
                                     label="Department / Ward"
                                     variant="outlined"
                                     name="Department / Ward"
+                                    fullWidth
                                     onChange={inputFeild}
                                 >
                                     <MenuItem value="general">General Medicine</MenuItem>
@@ -428,8 +485,10 @@ function Admission() {
                                     select
                                     error={errors.doctorName}
                                     helperText={errors.doctorName ? "This field is required" : ""}
+                                    id='Doctor’s Name'
                                     label="Doctor’s Name"
                                     variant="outlined"
+                                    fullWidth
                                     defaultValue=''
                                     name='Doctor’s Name'
                                     onChange={inputFeild}
@@ -445,10 +504,12 @@ function Admission() {
                                     select
                                     error={errors.typeOfAddmission}
                                     helperText={errors.typeOfAddmission ? "This field is required" : ""}
-                                    label="Type of Admission "
+                                    id='Type of Admission'
+                                    label="Type of Admission"
                                     variant="outlined"
+                                    fullWidth
                                     defaultValue=""
-                                    name="Type of Admission "
+                                    name="Type of Admission"
                                     onChange={inputFeild}
                                 >
                                     <MenuItem value="emergency">Emergency</MenuItem>
@@ -463,8 +524,9 @@ function Admission() {
                             <div className='CT1'>
                                 <TextField
                                     select
-                                    error={errors.reasionForAdmission}
-                                    helperText={errors.reasionForAdmission ? "This field is required" : ""}
+                                    error={errors.reasonForAdmission}
+                                    helperText={errors.reasonForAdmission ? "This field is required" : ""}
+                                    id='Reason for Admission'
                                     label="Reason for Admission"
                                     variant="outlined"
                                     fullWidth
@@ -487,28 +549,30 @@ function Admission() {
                                     select
                                     error={errors.paymentMode}
                                     helperText={errors.paymentMode ? "This field is required" : ""}
+                                    id='Mode of Payment'
                                     label="Mode of Payment"
                                     variant="outlined"
                                     fullWidth
+                                    defaultValue=''
                                     name='Mode of Payment'
                                     onChange={inputFeild}
                                 >
                                     <MenuItem value="cash">
-                                        <span style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center',fontWeight:'bold'}}>
+                                        <span style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', fontWeight: 'bold' }}>
                                             Cash
                                             <AttachMoneyIcon sx={{ color: 'green' }} />
                                         </span>
                                     </MenuItem>
 
                                     <MenuItem value="card">
-                                        <span style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center',fontWeight:'bold'}}>
+                                        <span style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', fontWeight: 'bold' }}>
                                             Card
                                             <CreditCardIcon sx={{ color: 'red' }} />
                                         </span>
                                     </MenuItem>
 
                                     <MenuItem value="online">
-                                        <span style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center',fontWeight:'bold'}}>
+                                        <span style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', fontWeight: 'bold' }}>
                                             Online Payment
                                             <PaymentsIcon sx={{ color: 'blue' }} />
                                         </span>
@@ -516,13 +580,15 @@ function Admission() {
                                 </TextField>
                             </div>
                             <div className="form-footer">
-                                <Button variant="outlined" color="primary" onClick={handleSubmit}>Submit</Button>
+                                <Button variant="outlined" color="primary" onClick={handleSubmit} disabled={loading}>
+                                    {loading ? 'Submitting...' : 'Submit'}
+                                </Button>
                             </div>
                         </Card.Text>
                     </Card.Body>
                 </Card>
             </div>
-            {/* Success Snackbar */}
+            {/* Snackbar Success */}
             <Snackbar
                 open={successOpen}
                 autoHideDuration={3000}
@@ -534,7 +600,7 @@ function Admission() {
                 </Box>
             </Snackbar>
 
-            {/* Error Snackbar */}
+            {/* Snackbar Error */}
             <Snackbar
                 open={errorOpen}
                 autoHideDuration={3000}
@@ -542,10 +608,9 @@ function Admission() {
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
                 <Box sx={{ backgroundColor: '#590e09ff', color: '#fff', px: 2, py: 1, borderRadius: 1 }}>
-                    Please fill in all required fields correctly.
+                    {errorMessage}
                 </Box>
             </Snackbar>
-
         </div>
     )
 }

@@ -16,6 +16,8 @@
     padding: 0;
     box-sizing: border-box;
     background-color: dodgerblue;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 .ImageWrapper {
