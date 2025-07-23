@@ -77,10 +77,35 @@ function Cards() {
                 break;
             case 'expireDate':
                 setExpireDate(value);
-                setErrors((prev) => ({
-                    ...prev,
-                    expireDate: !/^(0[1-9]|1[0-2])\/\d{2}$/.test(value),
-                }));
+
+                const [monthStr, yearStr] = value.split('/');
+
+                // Validate format first
+                const isValidFormat = /^(0[1-9]|1[0-2])\/\d{2}$/.test(value);
+
+                if (isValidFormat) {
+                    const inputMonth = parseInt(monthStr, 10);
+                    const inputYear = parseInt('20' + yearStr, 10); // Convert YY to YYYY
+
+                    const today = new Date();
+                    const currentMonth = today.getMonth() + 1; // getMonth() is 0-based
+                    const currentYear = today.getFullYear();
+
+                    const isExpired =
+                        inputYear < currentYear ||
+                        (inputYear === currentYear && inputMonth <= currentMonth);
+
+                    setErrors((prev) => ({
+                        ...prev,
+                        expireDate: isExpired, // true = error
+                    }));
+                } else {
+                    // Invalid format
+                    setErrors((prev) => ({
+                        ...prev,
+                        expireDate: true,
+                    }));
+                }
                 break;
             case 'cvv':
                 setCvv(value);
@@ -174,7 +199,7 @@ function Cards() {
                 setOpen(false);
 
                 setTimeout(() => {
-                    navigate('/receipt',{state:{email:email}});
+                    navigate('/receipt', { state: { email: email } });
                 }, 2000);
             } catch (error) {
                 console.error('Error saving card:', error);

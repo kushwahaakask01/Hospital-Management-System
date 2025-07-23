@@ -118,7 +118,7 @@ function Admission() {
                 const today = new Date().toISOString().split('T')[0];
                 setErrors(prev => ({
                     ...prev,
-                    addmissionDate: value === '' || value > today
+                    addmissionDate: value === '' || value > today || value<today
                 }));
                 setAddmissionDate(value);
                 break;
@@ -252,6 +252,39 @@ function Admission() {
         }
     };
 
+    const deleteById = async (email) => {
+        if (!email) {
+            setErrorMessage('No email provided for deletion.');
+            setErrorOpen(true);
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:5000/deletePatient/${email}`, {
+                method: 'DELETE',
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                setErrorMessage('Patient deleted successfully!');
+                setErrorOpen(true);
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000); // Wait 2 seconds before reloading
+            } else {
+                setErrorMessage('Deletion failed: ' + (result.message || 'Unknown error.'));
+                setErrorOpen(true);
+            }
+
+        } catch (error) {
+            console.error("Error during deletion:", error);
+            setErrorMessage("A network error occurred while deleting.");
+            setErrorOpen(true);
+        }
+    };
+
     return (
         <div className="MainDiv">
             {/* Top Nav */}
@@ -270,7 +303,9 @@ function Admission() {
                             {patients.map((item, index) => (
                                 <div key={index} className='CardTextdiv'>
                                     <div className='person'>
-                                        <PersonIcon sx={{ fontSize: 40, color: '#05295f' }} />
+                                        <PersonIcon
+                                            sx={{ fontSize: 40, color: '#05295f', cursor: 'pointer' }}
+                                        />
                                         <Button onClick={() => PatientData(item.email)} className='link'>{item.fullName}</Button>
                                     </div>
                                     <DeleteIcon
@@ -280,6 +315,7 @@ function Admission() {
                                             cursor: 'pointer',
                                             '&:hover': { color: 'rgb(121, 12, 12)' },
                                         }}
+                                        onClick={() => deleteById(item.email)}
                                     />
                                 </div>
                             ))}
@@ -440,7 +476,7 @@ function Admission() {
                                     error={errors.addmissionDate}
                                     helperText={
                                         errors.addmissionDate
-                                            ? "This field is required and date should not be in the future"
+                                            ? "Date should not be in the future or past or empty"
                                             : ""
                                     }
                                     id='Admission Date'

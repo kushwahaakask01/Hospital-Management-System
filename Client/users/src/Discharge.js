@@ -34,6 +34,34 @@ function Discharge() {
         severity: 'success',
     });
 
+    //Get data of patient throw email
+    const [patients, setPatients] = useState([]);
+    useEffect(() => {
+        if (!email) return;
+
+        const fetchPatient = async () => {
+            try {
+                const res = await fetch(`http://localhost:5000/GetByEmailInDecharge/${email}`);
+                const data = await res.json();
+
+                // Ensure data.data is an array
+                if (Array.isArray(data?.data)) {
+                    setPatients(data.data);
+                } else if (data?.data) {
+                    // If a single object is returned, wrap it in an array
+                    setPatients([data.data]);
+                } else {
+                    setPatients([]); // fallback
+                }
+            } catch (err) {
+                console.error(err);
+                setPatients([]); // fallback in case of error
+            }
+        };
+
+        fetchPatient();
+    }, [email]);
+
     // Handle input changes
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -44,7 +72,7 @@ function Discharge() {
             const today = new Date().toISOString().split('T')[0];
             setErrors((prev) => ({
                 ...prev,
-                dischargeDate: value === '' || value < today,
+                dischargeDate: value === '' || value < today || value < patients.dischargeDate
             }));
         }
 
@@ -57,7 +85,7 @@ function Discharge() {
     };
 
     // Submit handler
-    const handleSubmit = async() => {
+    const handleSubmit = async () => {
         const today = new Date().toISOString().split('T')[0];
 
         const newErrors = {
@@ -79,7 +107,7 @@ function Discharge() {
                 paymentMode: formData.paymentMode
             };
 
-           await fetch(`http://localhost:5000/dischargeDate/${email}`, {
+            await fetch(`http://localhost:5000/dischargeDate/${email}`, {
                 method: 'PUT',
                 headers: {
                     "Content-Type": "application/json",
@@ -126,36 +154,6 @@ function Discharge() {
     const handleSnackbarClose = () => {
         setSnackbar({ ...snackbar, open: false });
     };
-
-    //Get data of patient throw email
-    const [patients, setPatients] = useState([]);
-    useEffect(() => {
-        if (!email) return;
-
-        const fetchPatient = async () => {
-            try {
-                const res = await fetch(`http://localhost:5000/GetByEmailInDecharge/${email}`);
-                const data = await res.json();
-
-                // Ensure data.data is an array
-                if (Array.isArray(data?.data)) {
-                    setPatients(data.data);
-                } else if (data?.data) {
-                    // If a single object is returned, wrap it in an array
-                    setPatients([data.data]);
-                } else {
-                    setPatients([]); // fallback
-                }
-            } catch (err) {
-                console.error(err);
-                setPatients([]); // fallback in case of error
-            }
-        };
-
-        fetchPatient();
-    }, [email]);
-
-
 
     return (
         <div className='TopDischarge'>
